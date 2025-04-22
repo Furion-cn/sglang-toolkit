@@ -10,18 +10,12 @@ IMAGE_PREFIX="sealos.hub:5000/furion-sglang"
 # # 获取脚本所在目录的绝对路径
 # SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
-# 克隆或更新代码
-if [ -d "sglang" ]; then
-    echo "Updating existing repository..."
-    cd sglang
-    git fetch origin
-    git checkout ${BRANCH}
-    git pull origin ${BRANCH}
-    cd ..
-else
-    echo "Cloning repository..."
-    git clone -b ${BRANCH} ${REPO_URL} sglang
-fi
+# 删除已存在的仓库
+rm -rf sglang
+
+# 克隆代码
+echo "Cloning repository..."
+git clone -b ${BRANCH} ${REPO_URL} sglang
 
 # 获取最新commit id
 cd sglang
@@ -55,4 +49,4 @@ echo "Image info saved to: image_info_${TAG}.txt"
 
 # 清理工作目录（可选，取消注释以启用）
 # cd ../..
-# rm -rf ${WORK_DIR} 
+rm -rf sglang
