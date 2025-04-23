@@ -15,7 +15,7 @@ rm -rf sglang
 
 # 克隆代码
 echo "Cloning repository..."
-git clone -b ${BRANCH} ${REPO_URL} sglang
+git clone -b ${BRANCH} ${REPO_URL} sglang --depth 1
 
 # 获取最新commit id
 cd sglang

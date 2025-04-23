@@ -52,12 +52,12 @@ if [[ "$DP" -gt 1 ]]; then
     )
 fi
 
-if [ "$ENABLE_MTP" -eq 1 ]; then
-    MEM_FRACTION_STATIC=0.8
-    DISTRIBUTED_ARGS+=(
-        --speculative-algorithm EAGLE --speculative-draft-model-path /models/nextn --speculative-num-steps 3 --speculative-eagle-topk 2 --speculative-num-draft-tokens 2 --max-running-requests=512
-    )
-fi
+# if [ "$ENABLE_MTP" -eq 1 ]; then
+#     MEM_FRACTION_STATIC=0.8
+#     DISTRIBUTED_ARGS+=(
+#         --speculative-algorithm EAGLE --speculative-draft-model-path /models/nextn --speculative-num-steps 3 --speculative-eagle-topk 2 --speculative-num-draft-tokens 2 --max-running-requests=512
+#     )
+# fi
 
 mkdir -p /models/torch_compile_cache/
 export TORCHINDUCTOR_CACHE_DIR=/models/torch_compile_cache/

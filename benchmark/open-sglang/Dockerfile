@@ -17,5 +17,5 @@ RUN chmod +x /scripts/autobench.py && \
     chmod +x /scripts/entrypoint.sh && \
     chmod +x /scripts/benchmark.sh
 
-# 修改入口点为 autobench.py
-ENTRYPOINT ["python3", "/scripts/entrypoint.py"]
+# 修改入口点为 entrypoint.sh
+ENTRYPOINT ["/scripts/entrypoint.sh"]

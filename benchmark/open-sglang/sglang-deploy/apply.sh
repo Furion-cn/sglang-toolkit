@@ -6,7 +6,7 @@ NAME=$1
 IMAGE=$2
 REPLICA=${3:-2}
 TP=${4:-16}
-DP=${5:-2}
+DP=${5:-1}
 
 
 cat deploy_base.yaml|\

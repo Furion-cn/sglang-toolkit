@@ -29,7 +29,8 @@ def wait_for_service_ready():
         try:
             response = requests.get(health_url, timeout=5)
             if response.status_code == 200:
-                print("服务已就绪!")
+                print("服务已就绪, 等待1分钟...")
+                time.sleep(60)
                 return True
         except Exception as e:
             print(f"服务未就绪: {str(e)}")

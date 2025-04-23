@@ -3,25 +3,47 @@
 set -e
 
 # 设置工作目录
-REPO_URL="https://github.com/sgl-project/sglang.git"
+REPO_URL="git@github.com:sgl-project/sglang.git"
 BRANCH="main"
+TAG="v0.4.5"
 IMAGE_PREFIX="sealos.hub:5000/open-sglang"
 
-# # 获取脚本所在目录的绝对路径
-# SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# 解析命令行参数
+USE_MAIN=0
+while getopts "m" opt; do
+  case $opt in
+    m)
+      USE_MAIN=1
+      ;;
+    \?)
+      echo "无效的选项: -$OPTARG" >&2
+      exit 1
+      ;;
+  esac
+done
 
 # 删除已存在的仓库
 rm -rf sglang
 
 # 克隆代码
 echo "Cloning repository..."
-git clone -b ${BRANCH} ${REPO_URL} sglang
+if [ $USE_MAIN -eq 1 ]; then
+    echo "使用main分支构建..."
+    git clone -b ${BRANCH} ${REPO_URL} sglang
+else
+    echo "使用tag ${TAG}构建..."
+    git clone -b ${TAG} ${REPO_URL} sglang
+fi
 
 # 获取最新commit id
 cd sglang
-COMMIT_ID=$(git rev-parse --short=6 HEAD)
+# COMMIT_ID=$(git rev-parse --short=6 HEAD)
 DATE=$(date +%Y%m%d-%H%M%S)
-TAG="${DATE}-${COMMIT_ID}-auto"
+if [ $USE_MAIN -eq 1 ]; then
+    TAG="${BRANCH}-${DATE}-auto"
+else
+    TAG="${TAG}-auto"
+fi
 FULL_IMAGE_NAME="${IMAGE_PREFIX}:${TAG}"
 cd ..
 
