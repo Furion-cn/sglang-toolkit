@@ -23,23 +23,22 @@ def wait_for_service_ready():
     while True:
         # 检查是否超时
         if time.time() - start_time > timeout:
-            print("等待服务就绪超时(10分钟)")
+            print("等待服务就绪超时(10分钟)", flush=True)
             return False
             
         try:
             response = requests.get(health_url, timeout=5)
             if response.status_code == 200:
-                print("服务已就绪!")
+                print("服务已就绪!", flush=True)
                 return True
         except Exception as e:
-            print(f"服务未就绪: {str(e)}")
+            print(f"服务未就绪: {str(e)}", flush=True)
         
-        print("等待服务就绪中...")
+        print("等待服务就绪中...", flush=True)
         time.sleep(10)
 
 def run_benchmark(server_name):
-    """运行基准测试并收集结果"""
-    benchmark_cmd = "bash sglang-ci/scripts/benchmark.sh"
+    benchmark_cmd = "bash /scripts/benchmark.sh"
     print(f"Running benchmark: {benchmark_cmd}")
     returncode, stdout, stderr = run_command(benchmark_cmd)
     
@@ -69,6 +68,8 @@ def run_benchmark(server_name):
             "text": f"基准测试完成\n服务器: {server_name}\n时间: {date_str}\n结果文件: {result_file}\n\n测试结果:\n{stdout}"
         }
     }
+    if stderr:
+        message["content"]["text"] += f"\n\n错误信息:\n{stderr}"
     try:
         response = requests.post(feishu_webhook, json=message)
         if response.status_code == 200:

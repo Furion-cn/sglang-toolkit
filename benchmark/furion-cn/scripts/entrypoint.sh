@@ -67,7 +67,7 @@ else
    if [ "$ENABLE_DEEPEP" -eq 1 ]; then
       DISTRIBUTED_ARGS+=(
         --enable-deepep
-	--deepep-mode low_latency
+	      --deepep-mode low_latency
       )
    fi
 fi

@@ -3,7 +3,7 @@
 set -e
 
 # 设置工作目录
-REPO_URL="https://github.com/Furion-cn/sglang.git"
+REPO_URL="https://ghfast.top/https://github.com/Furion-cn/sglang.git"
 BRANCH="main"
 IMAGE_PREFIX="sealos.hub:5000/furion-sglang"
 

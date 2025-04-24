@@ -93,6 +93,8 @@ spec:
           #capabilities:
           #  add: [ "IPC_LOCK" ]
         env:
+        - name: MAX_CONCURRENCIES
+          value: "{MAX_CONCURRENCIES}"
         - name: NCCL_SOCKET_IFNAME
           value: "eth0"
         - name: NCCL_DEBUG
