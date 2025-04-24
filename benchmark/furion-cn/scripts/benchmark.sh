@@ -8,7 +8,7 @@ output_seq_len=1210
 # max_concurrencies=(1 2 4 8 16 32 64 128 256 512 1024 2048 3072 4096)
 
 # 支持多个并发数，用逗号分隔，例如：MAX_CONCURRENCIES="4,8,16"
-max_concurrencies=(${MAX_CONCURRENCIES:-1024})
+max_concurrencies=(${MAX_CONCURRENCIES:-16})
 
 # 如果环境变量包含逗号，则转换为数组
 if [[ $MAX_CONCURRENCIES == *","* ]]; then
