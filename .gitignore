@@ -1,4 +1,6 @@
 benchmark/furion-cn/sglang
 benchmark/furion-cn/image_info_*.txt
+benchmark/furion-cn/logs
 benchmark/open-sglang/sglang
 benchmark/open-sglang/image_info_*.txt
+benchmark/open-sglang/logs
