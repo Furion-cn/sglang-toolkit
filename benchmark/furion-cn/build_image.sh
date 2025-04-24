@@ -5,7 +5,7 @@ set -e
 # 设置工作目录
 REPO_URL="https://ghfast.top/https://github.com/Furion-cn/sglang.git"
 BRANCH="main"
-IMAGE_PREFIX="sealos.hub:5000/furion-sglang"
+IMAGE_PREFIX="ccr.ccs.tencentyun.com/furion/sglang"
 
 # # 获取脚本所在目录的绝对路径
 # SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"

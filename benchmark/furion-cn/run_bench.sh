@@ -26,10 +26,12 @@ SERVER_NAME="furion-sglang-autobench-${DATE}"
 cleanup() {
     echo "Cleaning up..."
     bash delete.sh ${SERVER_NAME}
-    exit 1
 }
 
-trap cleanup SIGINT SIGTERM
+# 确保在脚本退出时执行cleanup
+trap cleanup EXIT
+# 同时捕获中断信号
+trap "exit" SIGINT SIGTERM
 
 echo "Starting benchmark with:"
 echo "Server name: ${SERVER_NAME}"
@@ -66,4 +68,4 @@ while true; do
 done
 
 echo "Benchmark run completed!"
-echo "Check benchmark_results directory for test results." 
+echo "Check benchmark_results directory for test results."
