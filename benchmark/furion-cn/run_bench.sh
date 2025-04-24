@@ -39,15 +39,25 @@ echo "Image: ${FURION_SGLANG_IMAGE}"
 
 # 1. 部署服务
 echo "Deploying service..."
-bash apply.sh ${SERVER_NAME} ${FURION_SGLANG_IMAGE} -pr ${PREFILL_REPLICA} -pt ${PREFILL_TP} -pd ${PREFILL_DP} -dr ${DECODE_REPLICA} -dt ${DECODE_TP} -dd ${DECODE_DP} -mc ${MAX_CONCURRENCIES}
+bash apply.sh ${SERVER_NAME} ${FURION_SGLANG_IMAGE}
 
 # 2. 等待prefill pod完成并退出
 echo "Waiting for prefill pod to complete..."
+START_TIME=$(date +%s)
+TIMEOUT=$((60 * 60))  # 60分钟超时时间（秒）
+
 while true; do
+    # 检查是否超时
+    CURRENT_TIME=$(date +%s)
+    ELAPSED_TIME=$((CURRENT_TIME - START_TIME))
+    
+    if [ $ELAPSED_TIME -gt $TIMEOUT ]; then
+        echo "Error: Timeout after 60 minutes waiting for prefill pod"
+        exit 1
+    fi
+    
     # 检查pod状态
     POD_STATUS=$(kubectl get pod ${SERVER_NAME}-prefill-0 --namespace=inference-system -o jsonpath='{.status.phase}' 2>/dev/null || echo "NotFound")
-    # 检查重启次数
-    RESTART_COUNT=$(kubectl get pod ${SERVER_NAME}-prefill-0 --namespace=inference-system -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null || echo "0")
     
     if [ "$POD_STATUS" == "NotFound" ]; then
         echo "Error: Prefill pod not found"
@@ -55,16 +65,34 @@ while true; do
     elif [ "$POD_STATUS" == "Failed" ]; then
         echo "Error: Prefill pod failed"
         exit 1
-    elif [ "$RESTART_COUNT" != "0" ]; then
-        echo "Error: Pod has been restarted ${RESTART_COUNT} times, indicating issues"
-        exit 1
-    elif [ "$POD_STATUS" == "Succeeded" ]; then
-        echo "Prefill pod completed successfully"
-        break
+    elif [ "$POD_STATUS" == "Pending" ]; then
+        # Pod还在等待调度，获取更详细的Pending原因
+        PENDING_REASON=$(kubectl get pod ${SERVER_NAME}-prefill-0 --namespace=inference-system -o jsonpath='{.status.conditions[?(@.type=="PodScheduled")].reason}' 2>/dev/null || echo "Unknown")
+        echo "Pod is pending, reason: ${PENDING_REASON}"
+        sleep 30
+        continue
+    fi
+
+    if [ "$POD_STATUS" == "Running" ] || [ "$POD_STATUS" == "Succeeded" ]; then
+        RESTART_COUNT=$(kubectl get pod ${SERVER_NAME}-prefill-0 --namespace=inference-system -o jsonpath='{.status.containerStatuses[0].restartCount}' 2>/dev/null || echo "0")
+
+        # 确保变量是数字
+        if [[ ! "$RESTART_COUNT" =~ ^[0-9]+$ ]]; then
+            echo "Warning: Invalid RESTART_COUNT value: '${RESTART_COUNT}'"
+            RESTART_COUNT=0
+        fi
+
+        if [ -n "$RESTART_COUNT" ] && [ "$RESTART_COUNT" -ge 1 ]; then
+            echo "Error: Pod has been restarted ${RESTART_COUNT} times, indicating issues"
+            exit 0
+        elif [ "$POD_STATUS" == "Succeeded" ]; then
+            echo "Prefill pod completed successfully"
+            break
+        fi
     fi
     
-    echo "Prefill pod status: ${POD_STATUS}, restart count: ${RESTART_COUNT}, waiting..."
-    sleep 10
+    echo "Prefill pod status: ${POD_STATUS}, waiting..."
+    sleep 30
 done
 
 echo "Benchmark run completed!"

@@ -1,4 +1,4 @@
-FROM ccr.ccs.tencentyun.com/furion/sglang:v0.2.0 
+FROM ccr.ccs.tencentyun.com/furion/sglang:v0.2.1
 
 ARG HTTP_PROXY
 ARG HTTPS_PROXY
@@ -8,7 +8,7 @@ COPY sglang sglang
 ENV PYTHONPATH /sgl-workspace/Mooncake/build/mooncake-integration/
 ENV LD_LIBRARY_PATH /usr/local/cuda/compat/lib:/usr/local/nvidia/lib:/usr/local/nvidia/lib64:/sgl-workspace/Mooncake/build/mooncake-common/etcd/
 
-RUN cd sglang && pip install -e "python[all]" --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer-python -i https://mirrors.aliyun.com/pypi/simple && pip install etcd3 protobuf==3.19.0 nvtx -i https://mirrors.aliyun.com/pypi/simple
+RUN cd sglang && pip install -e "python[all]" --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer-python -i https://mirrors.aliyun.com/pypi/simple
 
 # 确保所有脚本有执行权限
 COPY scripts /scripts
