@@ -1,7 +1,7 @@
 name: Build SGLang Docker Image
 
 on:
-  manual:
+  workflow_dispatch:
     inputs:
       git_branch:
         description: 'Git branch'
