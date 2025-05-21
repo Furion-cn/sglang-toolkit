@@ -35,8 +35,8 @@ jobs:
 
       - name: Build and Push SGLang Base Image
         run: |
-          DATETIME=$(date '+%Y%m%d_%H%M')
-          VERSION="${DATETIME}_base"
+          DATETIME=$(date '+%Y%m%d%H%M')
+          VERSION="${DATETIME}-base"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           docker build . -f images/base/Dockerfile.base -t furion-sh.tencentcloudcr.com/furion/sglang-base:${VERSION}
           docker push furion-sh.tencentcloudcr.com/furion/sglang-base:${VERSION}

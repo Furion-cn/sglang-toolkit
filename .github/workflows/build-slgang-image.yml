@@ -39,10 +39,10 @@ jobs:
 
       - name: Build and Push SGLang Image
         run: |
-          DATETIME=$(date '+%Y%m%d_%H%M')
+          DATETIME=$(date '+%Y%m%d%H%M')
           ORG=$(echo "${{ inputs.remote_repo }}" | awk -F'/' '{print $(NF-1)}' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
           BRANCH=$(echo "${{ inputs.git_branch }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
-          VERSION="${DATETIME}_${ORG}_${BRANCH}"
+          VERSION="${DATETIME}-${ORG}-${BRANCH}"
           echo "VERSION=${VERSION}" >> $GITHUB_ENV
           bash scripts/clone_sglang.sh ${{ inputs.remote_repo }} ${{ inputs.git_branch }}
           docker build . -f images/sglang/Dockerfile.tcr -t furion-sh.tencentcloudcr.com/furion/sglang:${VERSION}
