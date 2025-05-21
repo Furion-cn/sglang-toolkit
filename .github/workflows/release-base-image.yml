@@ -1,0 +1,38 @@
+name: Build SGLang Base Docker Image
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'images/**'
+
+jobs:
+  build-dev:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          docker-images: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Login to Tencent Cloud Registry
+        uses: docker/login-action@v2
+        with:
+          registry: furion-sh.tencentcloudcr.com
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
+      - name: Build and Push SGLang Base Image
+        run: |
+          docker build . -f images/Dockerfile.base -t furion-sh.tencentcloudcr.com/furion/sglang-base:latest
+          docker push furion-sh.tencentcloudcr.com/furion/sglang-base:latest
