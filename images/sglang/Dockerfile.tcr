@@ -3,6 +3,6 @@ FROM furion-sh.tencentcloudcr.com/furion/sglang:v0.01-main-latest
 COPY sglang sglang 
 COPY scripts /script
 
-RUN cd sglang && pip install -e "python[all]" --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer-python -i https://mirrors.aliyun.com/pypi/simple
+RUN cd sglang && pip install -e "python[all]" --find-links https://flashinfer.ai/whl/cu124/torch2.5/flashinfer-python
 
 ENTRYPOINT ["bash", "/scripts/entrypoint.sh"]
