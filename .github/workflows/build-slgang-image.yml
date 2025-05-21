@@ -43,6 +43,11 @@ jobs:
           ORG=$(echo "${{ inputs.remote_repo }}" | awk -F'/' '{print $(NF-1)}' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
           BRANCH=$(echo "${{ inputs.git_branch }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
           VERSION="${DATETIME}_${ORG}_${BRANCH}"
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
           bash scripts/clone_sglang.sh ${{ inputs.remote_repo }} ${{ inputs.git_branch }}
           docker build . -f images/sglang/Dockerfile.tcr -t furion-sh.tencentcloudcr.com/furion/sglang:${VERSION}
           docker push furion-sh.tencentcloudcr.com/furion/sglang:${VERSION}
+
+      - name: Print the image name
+        run: |
+          echo "IMAGE_NAME: furion-sh.tencentcloudcr.com/furion/sglang:${VERSION}"
