@@ -35,8 +35,8 @@ jobs:
 
       - name: Build and Push SGLang Base Image
         run: |
-          source hack/lib/version.sh
-          VERSION=`get_version_string`
+          DATETIME=$(date '+%Y%m%d_%H%M')
+          export VERSION="${DATETIME}_base"
           echo "VERSION: ${VERSION}"
           docker build . -f images/base/Dockerfile.base -t furion-sh.tencentcloudcr.com/furion/sglang-base:${VERSION}
           docker push furion-sh.tencentcloudcr.com/furion/sglang-base:${VERSION}
