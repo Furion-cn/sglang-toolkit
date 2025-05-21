@@ -1,0 +1,48 @@
+name: Build SGLang Docker Image
+
+on:
+  manual:
+    inputs:
+      git_branch:
+        description: 'Git branch'
+        required: true
+        default: 'main'
+      remote_repo:
+        description: 'Remote repository'
+        required: true
+        default: 'https://github.com/Furion-cn/sglang.git'
+
+jobs:
+  build-dev:
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@main
+        with:
+          tool-cache: false
+          docker-images: false
+          android: true
+          dotnet: true
+          haskell: true
+          large-packages: true
+          swap-storage: false
+
+      - name: Login to Tencent Cloud Registry
+        uses: docker/login-action@v2
+        with:
+          registry: furion-sh.tencentcloudcr.com
+          username: ${{ secrets.TCR_USERNAME }}
+          password: ${{ secrets.TCR_PASSWORD }}
+
+      - name: Build and Push SGLang Image
+        run: |
+          DATETIME=$(date '+%Y%m%d_%H%M')
+          ORG=$(echo "${{ inputs.remote_repo }}" | awk -F'/' '{print $(NF-1)}' | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+          BRANCH=$(echo "${{ inputs.git_branch }}" | tr '[:upper:]' '[:lower:]' | sed 's/[^a-z0-9]/-/g')
+          VERSION="${DATETIME}_${ORG}_${BRANCH}"
+          bash scripts/clone_sglang.sh ${{ inputs.remote_repo }} ${{ inputs.git_branch }}
+          docker build . -f images/sglang/Dockerfile.tcr -t furion-sh.tencentcloudcr.com/furion/sglang:${VERSION}
+          docker push furion-sh.tencentcloudcr.com/furion/sglang:${VERSION}

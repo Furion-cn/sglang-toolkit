@@ -2,14 +2,6 @@ name: Build SGLang Base Docker Image
 
 on:
   push:
-    tags:
-      - 'v*'  # 匹配所有以v开头的标签，如v1.0.0, v2.1.0等
-  pull_request:
-    types:
-      - closed
-      - opened
-      - synchronize
-      - edited
     branches:
       - main
     paths:
@@ -42,5 +34,5 @@ jobs:
 
       - name: Build and Push SGLang Base Image
         run: |
-          docker build . -f images/Dockerfile.base -t furion-sh.tencentcloudcr.com/furion/sglang-base:latest --no-cache
+          docker build . -f images/Dockerfile.base -t furion-sh.tencentcloudcr.com/furion/sglang-base:latest
           docker push furion-sh.tencentcloudcr.com/furion/sglang-base:latest
