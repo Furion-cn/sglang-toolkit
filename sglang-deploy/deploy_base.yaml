@@ -92,6 +92,12 @@ spec:
           #capabilities:
           #  add: [ "IPC_LOCK" ]
         env:
+        - name: DISABLE_OVERLAP_SCHEDULE
+          value: "0"
+        - name: DISABLE_RADIX_CACHE
+          value: "0"
+        - name: ENABLE_MOE_DENSE_DP
+          value: "0"
         - name: MAX_CONCURRENCIES
           value: "{MAX_CONCURRENCIES}"
         - name: NCCL_SOCKET_IFNAME
@@ -109,10 +115,9 @@ spec:
         - name: GLOO_SOCKET_IFNAME
           value: "eth0"
         - name: MODEL_PATH
-          # value: "/models/deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct"
-          value: "/models/DeepSeek-R1-BF16"
+          value: "{MODEL_PATH}"
         - name: COMPILE_OPTS
-          value: "--disable-cuda-graph --log-level debug"
+          value: "--disable-cuda-graph --log-level info"
         - name: MEM_FRACTION_STATIC
           value: "0.8"
         - name: PD_ROLE
@@ -207,9 +212,14 @@ spec:
          # capabilities:
          #   add: [ "IPC_LOCK" ]
         env:
+        - name: DISABLE_OVERLAP_SCHEDULE
+          value: "0"
+        - name: DISABLE_RADIX_CACHE
+          value: "0"
+        - name: ENABLE_MOE_DENSE_DP
+          value: "0"
         - name: MODEL_PATH
-          # value: "/models/deepseek-ai/DeepSeek-Coder-V2-Lite-Instruct"
-          value: "/models/DeepSeek-R1-BF16"
+          value: "{MODEL_PATH}"
         - name: NCCL_SOCKET_IFNAME
           value: "eth0"
         #- name: NCCL_DEBUG
@@ -226,7 +236,7 @@ spec:
           value: "eth0"
         - name: COMPILE_OPTS
           #value: "--enable-torch-compile --cuda-graph-max-bs 128 --torch-compile-max-bs 128 --cuda-graph-bs 1 2 3 4 15 16 126 127 128 --max-running-requests 2048 --log-level debug"
-          value: "--disable-cuda-graph --max-running-requests 2048 --log-level debug"
+          value: "--max-running-requests 2048 --log-level info"
         - name: MEM_FRACTION_STATIC
           value: "0.85"
         - name: NVSHMEM_HCA_LIST

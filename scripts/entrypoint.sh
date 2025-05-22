@@ -19,6 +19,9 @@ MEM_FRACTION_STATIC=${MEM_FRACTION_STATIC:-0}
 ATTENTION_BACKEND=${ATTENTION_BACKEND:-"flashinfer"}
 KV_TRANSFER_DEVICE=${KV_TRANSFER_DEVICE:-"mlx5_0"}
 COMPILE_OPTS=${COMPILE_OPTS:-"--enable-torch-compile --cuda-graph-max-bs 128 --torch-compile-max-bs 128"}
+DISABLE_OVERLAP_SCHEDULE=${DISABLE_OVERLAP_SCHEDULE:-0}
+ENABLE_MOE_DENSE_DP=${ENABLE_MOE_DENSE_DP:-0}
+DISABLE_RADIX_CACHE=${DISABLE_RADIX_CACHE:-0}
 
 DISTRIBUTED_ARGS=(
     --tp-size $TP
@@ -42,13 +45,12 @@ if [ "$PD_ROLE" = "prefill" ];then
      --dist-init-addr "$SERVER_NAME-prefill-0.$SERVER_NAME-prefill.inference-system.svc.cluster.local:$MASTER_PORT"
      --disaggregation-ib-device $KV_TRANSFER_DEVICE
      --disable-cuda-graph
-     --disable-overlap-schedule
      --chunked-prefill-size -1
    )
    if [ "$ENABLE_DEEPEP" -eq 1 ]; then
       DISTRIBUTED_ARGS+=(
         --deepep-mode normal
-        --enable-deepep
+        --enable-deepep-moe
       )
    fi
 elif [ "$PD_ROLE" = "decode" ];then
@@ -57,12 +59,10 @@ elif [ "$PD_ROLE" = "decode" ];then
      --dist-init-addr "$SERVER_NAME-decode-0.$SERVER_NAME-decode.inference-system.svc.cluster.local:$MASTER_PORT"
      --disaggregation-ib-device $KV_TRANSFER_DEVICE
      --chunked-prefill-size -1
-     --disable-radix-cache
    )
    if [ "$ENABLE_DEEPEP" -eq 1 ]; then
       DISTRIBUTED_ARGS+=(
-	      # --enable-ep-moe
-        --enable-deepep
+        --enable-deepep-moe
         --deepep-mode low_latency
       )
    fi    
@@ -78,11 +78,28 @@ else
    fi
 fi
 
+if [ "$DISABLE_RADIX_CACHE" -eq 1 ]; then
+    DISTRIBUTED_ARGS+=(
+        --disable-radix-cache
+    )
+fi
+
+if [ "$DISABLE_OVERLAP_SCHEDULE" -eq 1 ]; then
+    DISTRIBUTED_ARGS+=(
+        --disable-overlap-schedule
+    )
+fi
+
 if [[ "$DP" -gt 1 ]]; then
     DISTRIBUTED_ARGS+=(
       --enable-dp-attention
-      --moe-dense-tp-size 1
       --dp-size $DP
+    )
+fi
+
+if [[ "$DP" -gt 1 && "$ENABLE_MOE_DENSE_DP" -eq 1 ]]; then
+    DISTRIBUTED_ARGS+=(
+        --moe-dense-tp-size 1
     )
 fi
 

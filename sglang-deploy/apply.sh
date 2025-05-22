@@ -13,6 +13,7 @@ DECODE_REPLICA=${DECODE_REPLICA:-1}
 DECODE_TP=${DECODE_TP:-8}
 DECODE_DP=${DECODE_DP:-1}
 MAX_CONCURRENCIES=${MAX_CONCURRENCIES:-1024}
+MODEL_PATH=${MODEL_PATH:-"/models/DeepSeek-R1-BF16"}
 
 if [ "$PREFILL_TP" -ge 8 ]; then
     PREFILL_GPU=8
@@ -61,6 +62,7 @@ cat deploy_base.yaml|\
     sed "s#{MINILB_PD_ROLE}#${MINILB_PD_ROLE}#g"|\
 	sed "s#{PREFILL_GPU}#${PREFILL_GPU}#g"|\
 	sed "s#{DECODE_GPU}#${DECODE_GPU}#g"|\
+	sed "s#{MODEL_PATH}#${MODEL_PATH}#g"|\
         sed "s#{DECODE_PD_ROLE}#${DECODE_PD_ROLE}#g" > .deploy_tmp.yaml
 
 kubectl -n inference-system delete pods -l app=${NAME}-prefill --force
