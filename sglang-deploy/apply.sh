@@ -65,9 +65,9 @@ cat deploy_base.yaml|\
 	sed "s#{MODEL_PATH}#${MODEL_PATH}#g"|\
         sed "s#{DECODE_PD_ROLE}#${DECODE_PD_ROLE}#g" > .deploy_tmp.yaml
 
-kubectl -n inference-system delete pods -l app=${NAME}-prefill --force
-kubectl -n inference-system delete pods -l app=${NAME}-decode --force
-kubectl -n inference-system delete pods -l app=${NAME}-minilb --force
+kubectl -n inference-system delete pods -l app=${NAME}-prefill 
+kubectl -n inference-system delete pods -l app=${NAME}-decode
+kubectl -n inference-system delete pods -l app=${NAME}-minilb
 
 kubectl apply -f .deploy_tmp.yaml
 rm -rf .deploy_tmp.yaml
